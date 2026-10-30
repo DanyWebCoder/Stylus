@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>STYLUS ONLY — S26 Ultra Pen Arcade</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============ BASE / ANTI-SELECT ============ */
+:root{
+  --bg:#0a0e14; --panel:#101826; --panel2:#0c1219;
+  --line:rgba(146,178,206,.14); --line2:rgba(146,178,206,.3);
+  --tx:#dfe9f2; --dim:#8b9fb3; --faint:#5d7186;
+  --pen:#4de8c2; --amber:#ffb454; --coral:#ff6e6e; --violet:#9d8cff;
+  --disp:'Unbounded',sans-serif; --body:'Manrope',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;
+  user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+::selection{background:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:var(--body);line-height:1.55;overflow-x:hidden;touch-action:manipulation}
+button{font-family:inherit;color:inherit}
+canvas{display:block;touch-action:none}
+a,img{-webkit-user-drag:none}
+:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
+.mono{font-family:var(--mono)}
+.dim{color:var(--dim)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+section[id]{scroll-margin-top:76px}
+
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(rgba(141,178,208,.13) 1px,transparent 1.4px);background-size:26px 26px;}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
+.glow{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+.g1{width:540px;height:540px;background:rgba(77,232,194,.07);top:-170px;left:-130px;animation:drift1 26s ease-in-out infinite alternate}
+.g2{width:640px;height:640px;background:rgba(255,180,84,.06);bottom:-240px;right:-170px;animation:drift2 32s ease-in-out infinite alternate}
+@keyframes drift1{to{transform:translate(90px,70px)}}
+@keyframes drift2{to{transform:translate(-110px,-80px)}}
+#trailFx{position:fixed;inset:0;z-index:60;pointer-events:none}
+
+.screen{display:none}
+.screen.on{display:block;animation:scrIn .55s cubic-bezier(.2,.7,.2,1)}
+@keyframes scrIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+.kick{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:10px}
+.kick::before{content:'';width:26px;height:1px;background:var(--pen);flex:none}
+.display{font-family:var(--disp);font-weight:800;line-height:1.04;letter-spacing:-.01em}
+.stroke{color:transparent;-webkit-text-stroke:1.5px var(--pen)}
+@supports not (-webkit-text-stroke:1px #000){.stroke{color:var(--pen)}}
+
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx);
+  background:transparent;border:1px solid var(--line2);padding:13px 20px;cursor:pointer;transition:.22s;display:inline-flex;gap:9px;align-items:center}
+.btn:hover{border-color:var(--pen);color:var(--pen);transform:translateY(-2px);box-shadow:0 8px 24px -10px rgba(77,232,194,.5)}
+.btn:active{transform:translateY(0)}
+.btn.solid{background:var(--pen);border-color:var(--pen);color:#04211a;font-weight:600;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+.btn.solid:hover{background:#72f4d3;color:#04211a;box-shadow:0 10px 30px -10px rgba(77,232,194,.65)}
+.btn.dis{opacity:.35;pointer-events:none}
+
+.corners{position:relative}
+.corners::before,.corners::after{content:'';position:absolute;width:15px;height:15px;border:2px solid var(--pen);pointer-events:none;z-index:7}
+.corners::before{top:-2px;left:-2px;border-right:0;border-bottom:0}
+.corners::after{bottom:-2px;right:-2px;border-left:0;border-top:0}
+
+.brand{display:flex;flex-direction:column;line-height:1.2;text-align:left}
+.brand b{font-family:var(--disp);font-size:13px;letter-spacing:.06em;font-weight:700}
+.brand span{font-family:var(--mono);font-size:9.5px;letter-spacing:.28em;color:var(--dim)}
+
+.led{width:8px;height:8px;border-radius:50%;background:#3b4a5a;display:inline-block;flex:none;transition:.3s}
+.led.on{background:var(--pen);box-shadow:0 0 10px var(--pen);animation:pulse 1.8s infinite}
+@keyframes pulse{50%{opacity:.45}}
+
+/* ============ ЭКРАН ВЫБОРА УСТРОЙСТВА ============ */
+.dv{padding-top:26px;padding-bottom:60px;min-height:100vh;display:flex;flex-direction:column}
+.dv-top{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.tag-exp{font-size:10px;letter-spacing:.22em;color:var(--amber)}
+.dv-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:56px;flex:1;padding-top:56px}
+.dv-left{position:sticky;top:80px;align-self:start}
+.dv-left h1{font-size:clamp(42px,6.4vw,84px);margin:20px 0 22px}
+.dv-sub{color:var(--dim);font-size:16.5px;max-width:400px}
+.penline{display:flex;align-items:center;gap:10px;margin:28px 0 20px;font-size:11px;letter-spacing:.18em;color:var(--dim)}
+.penline .ok{color:var(--pen)}
+.caret{width:8px;height:14px;background:var(--pen);animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.dv-note{font-size:10.5px;letter-spacing:.06em;color:var(--faint);max-width:380px;line-height:1.8}
+.dev-row{display:grid;grid-template-columns:48px 1fr auto 24px;align-items:center;gap:16px;width:100%;text-align:left;
+  background:none;border:none;border-bottom:1px solid var(--line);padding:21px 10px;cursor:pointer;transition:.25s}
+.dev-row:first-child{border-top:1px solid var(--line)}
+.dev-row .idx{font-family:var(--mono);font-size:12px;color:var(--faint);transition:.25s}
+.dev-row .nm{font-weight:800;font-size:16.5px;display:block}
+.dev-row .ds{display:block;color:var(--dim);font-size:13px;margin-top:3px}
+.dev-row .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--faint);border:1px solid var(--line);padding:5px 9px;white-space:nowrap}
+.dev-row .arr{color:var(--faint);font-size:18px;transition:.25s}
+.dev-row:hover{background:linear-gradient(90deg,rgba(77,232,194,.08),transparent 70%)}
+.dev-row:hover .idx{color:var(--pen)}
+.dev-row:hover .arr{transform:translateX(6px);color:var(--pen)}
+.dev-row.picked{background:rgba(77,232,194,.1)}
+.dev-row.picked .idx{color:var(--pen)}
+.dev-row.picked .arr::before{content:'✓ '}
+.dv-cont{margin-top:20px;font-size:10.5px;letter-spacing:.18em;color:var(--faint)}
+
+/* ============ ТОПБАР ============ */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(10,14,20,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+.tb-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:none;padding:8px 13px;cursor:pointer;transition:.22s;font-size:12px}
+.chip:hover{border-color:var(--pen)}
+.chip b{font-weight:700}
+.chip .cx{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--amber)}
+.penstat{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--dim)}
+.penstat .ok{color:var(--pen)}
+
+/* ============ ГЛАВНЫЙ ЭКРАН ============ */
+.hero{padding-top:64px;padding-bottom:58px}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+.hero-h{font-size:clamp(40px,6.6vw,82px);margin:20px 0 20px}
+.hero-sub{color:var(--dim);font-size:17px;max-width:440px}
+.hero-cta{display:flex;gap:14px;margin:30px 0 26px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:22px;font-size:11px;letter-spacing:.16em;color:var(--faint);flex-wrap:wrap}
+.hero-stats b{color:var(--pen);font-weight:600}
+.padbox{border:1px solid var(--line2);background:var(--panel2)}
+.pad-head{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px dashed var(--line);font-size:10px;letter-spacing:.2em;color:var(--dim)}
+.pad-head #padState{color:var(--amber)}
+.pad-head #padState.err{color:var(--coral)}
+#padCv{width:100%;height:230px;background:var(--panel2);cursor:crosshair}
+
+.ticker{border-block:1px solid var(--line);overflow:hidden;padding:11px 0;position:relative;z-index:2}
+.ticker .lane{display:flex;width:max-content;animation:tick 30s linear infinite}
+.ticker span{font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;color:var(--faint);padding:0 20px;white-space:nowrap}
+.ticker em{color:var(--pen);font-style:normal}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+.sec{padding-top:76px}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:34px;flex-wrap:wrap}
+.h2{font-size:clamp(26px,4.4vw,50px);margin-top:14px}
+.sec-sub{color:var(--dim);margin-top:8px;font-size:15.5px}
+.sec-tag{font-size:10.5px;letter-spacing:.2em;color:var(--faint);border:1px dashed var(--line2);padding:9px 14px}
+
+.carts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cart{--acc:var(--pen);border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--panel2));
+  padding:20px;cursor:pointer;position:relative;transition:.28s;display:flex;flex-direction:column;gap:13px;text-align:left}
+.cart:hover{transform:translateY(-5px);border-color:var(--acc);box-shadow:0 18px 44px -20px rgba(0,0,0,.8)}
+.cart.sel{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 14px 40px -20px rgba(0,0,0,.7)}
+.cart .num{position:absolute;top:12px;right:16px;font-family:var(--disp);font-size:36px;font-weight:800;color:transparent;-webkit-text-stroke:1px var(--acc);opacity:.75}
+.cart .ld{display:none;position:absolute;top:16px;left:16px;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--acc)}
+.cart.sel .ld{display:block;animation:pulse 1.6s infinite}
+.motif{height:108px;border:1px dashed var(--line);position:relative;overflow:hidden;background:radial-gradient(circle at 50% 120%,rgba(255,255,255,.04),transparent 60%)}
+.motif svg{position:absolute;inset:0;width:100%;height:100%}
+.cart h3{font-family:var(--disp);font-size:17px;font-weight:700;letter-spacing:.02em}
+.cart .kind{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--acc);display:block;margin-top:5px}
+.cart p{color:var(--dim);font-size:13.5px;flex:1}
+.cart .go{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--tx);transition:.22s}
+.cart:hover .go{color:var(--acc);letter-spacing:.24em}
+.fdot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 16px var(--amber);animation:flash 1.9s infinite}
+@keyframes flash{0%,100%{opacity:.12;transform:scale(.55)}45%{opacity:1;transform:scale(1.3)}}
+.spin{transform-origin:60px 60px;animation:rot 9s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.zline{stroke-dasharray:280;stroke-dashoffset:280;animation:zdraw 3.4s ease-in-out infinite}
+@keyframes zdraw{0%{stroke-dashoffset:280}55%{stroke-dashoffset:0}80%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+
+.stage-wrap{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:18px}
+.stage{position:relative;border:1px solid var(--line2);background:var(--panel2);height:clamp(380px,54vh,470px);touch-action:none;overflow:hidden;cursor:crosshair;
+  background-image:linear-gradient(rgba(146,178,206,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(146,178,206,.05) 1px,transparent 1px);background-size:44px 44px}
+#stageCv{position:absolute;inset:0;width:100%;height:100%}
+#targets{position:absolute;inset:0;z-index:3}
+.hud{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;gap:10px;padding:10px 16px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--dim);border-bottom:1px dashed var(--line);background:rgba(10,14,20,.55)}
+.hud b{color:var(--pen);font-size:13px;font-weight:600}
+.smsg{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;gap:9px;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding:24px}
+.msg-big{font-family:var(--disp);font-weight:800;font-size:clamp(20px,3.6vw,38px);text-shadow:0 0 34px rgba(77,232,194,.3)}
+.msg-big.dim2{color:var(--dim);text-shadow:none;font-size:clamp(15px,2.4vw,22px)}
+.msg-sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--dim)}
+.photon{position:absolute;width:76px;height:76px;transform:translate(-50%,-50%);pointer-events:none}
+.photon .core{position:absolute;inset:20px;border-radius:50%;background:radial-gradient(circle,#fff,var(--amber) 52%,transparent 74%);box-shadow:0 0 26px var(--amber)}
+.photon .ring{position:absolute;inset:0;border:1.5px solid var(--amber);border-radius:50%;animation:phring 1.5s ease-out forwards}
+@keyframes phring{from{transform:scale(.35);opacity:1}to{transform:scale(1.3);opacity:0}}
+.photon.out{opacity:0;transform:translate(-50%,-50%) scale(.3);transition:.18s}
+.burst{position:absolute;width:10px;height:10px;transform:translate(-50%,-50%);border-radius:50%;background:#fff;pointer-events:none;animation:burst .45s ease-out forwards}
+@keyframes burst{from{box-shadow:0 0 0 0 rgba(255,180,84,.75)}to{box-shadow:0 0 0 48px rgba(255,180,84,0);opacity:0}}
+.missx{position:absolute;transform:translate(-50%,-50%);color:var(--coral);font-family:var(--mono);font-size:13px;pointer-events:none;animation:missf .5s forwards}
+@keyframes missf{to{opacity:0;transform:translate(-50%,-90%)}}
+.zring{position:absolute;width:26px;height:26px;border:1.5px solid rgba(157,140,255,.85);border-radius:50%;transform:translate(-50%,-50%);
+  pointer-events:none;display:none;z-index:4;box-shadow:0 0 14px rgba(157,140,255,.35)}
+
+.side{display:flex;flex-direction:column;gap:12px}
+.side-box{border:1px solid var(--line);background:var(--panel2);padding:16px}
+.side-box .rt{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--pen);margin-bottom:8px}
+.side-box p{color:var(--dim);font-size:13px}
+.scorebox{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.display-num{font-family:var(--disp);font-size:46px;font-weight:800;line-height:1;color:var(--pen);text-shadow:0 0 26px rgba(77,232,194,.35)}
+#inputState{font-size:10px;letter-spacing:.18em;color:var(--dim)}
+#inputState.ok{color:var(--pen)}
+#inputState.err{color:var(--coral)}
+.ctrls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ctrls .btn{justify-content:center;padding:12px 8px;font-size:11px}
+.side .tiny{font-size:10px;letter-spacing:.08em;color:var(--faint);line-height:1.8}
+
+/* ============ ЛАБОРАТОРИЯ ============ */
+.zgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.zone{border:1px solid var(--line);background:var(--panel2);padding:16px;transition:border-color .25s}
+.zone:hover{border-color:var(--line2)}
+.z5{grid-column:span 5}.z6{grid-column:span 6}.z7{grid-column:span 7}.z12{grid-column:span 12}
+.zhead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.znum{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--pen);border:1px solid rgba(77,232,194,.35);padding:3px 8px;flex:none}
+.zhead h4{font-size:15px;font-weight:800}
+.zdesc{color:var(--dim);font-size:12.5px;margin-bottom:12px}
+.zpad{position:relative;min-height:150px;border:1px dashed var(--line2);touch-action:none;overflow:hidden;cursor:crosshair;
+  background-image:radial-gradient(rgba(146,178,206,.1) 1px,transparent 1.3px);background-size:18px 18px}
+.zpad.deny{animation:denyFlash .5s ease-out}
+@keyframes denyFlash{from{box-shadow:inset 0 0 0 2px rgba(255,110,110,.65)}to{box-shadow:inset 0 0 0 2px rgba(255,110,110,0)}}
+.zread{position:absolute;left:10px;bottom:8px;z-index:3;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--pen);text-shadow:0 0 12px rgba(77,232,194,.4)}
+.zread.err{color:var(--coral);text-shadow:0 0 12px rgba(255,110,110,.45)}
+.zhint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;pointer-events:none;
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);transition:opacity .4s}
+.zpad.used .zhint{opacity:0}
+.pbar{position:absolute;left:18px;right:18px;top:50%;height:10px;transform:translateY(-50%);border:1px solid var(--line2)}
+.pfill{height:100%;width:0;background:linear-gradient(90deg,var(--pen),var(--amber))}
+.pdot{position:absolute;left:50%;top:26%;width:16px;height:16px;border-radius:50%;background:var(--pen);box-shadow:0 0 16px var(--pen);transform:translate(-50%,-50%) scale(.6)}
+.tbub{position:absolute;left:50%;top:50%;width:100px;height:100px;transform:translate(-50%,-50%);border:1px solid var(--line2);border-radius:50%}
+.tbub::before,.tbub::after{content:'';position:absolute;background:var(--line)}
+.tbub::before{left:50%;top:-8px;bottom:-8px;width:1px}
+.tbub::after{top:50%;left:-8px;right:-8px;height:1px}
+.tdot{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;background:var(--pen);box-shadow:0 0 14px var(--pen);transform:translate(-50%,-50%);transition:transform .08s}
+#trkCv{position:absolute;inset:0;width:100%;height:100%}
+.zreset{position:absolute;top:8px;right:8px;z-index:4;background:none;border:1px solid var(--line2);color:var(--dim);font-family:var(--mono);font-size:9px;letter-spacing:.14em;padding:5px 9px;cursor:pointer;transition:.2s}
+.zreset:hover{border-color:var(--coral);color:var(--coral)}
+.hring{position:absolute;width:56px;height:56px;border:1.5px solid var(--pen);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity .25s;box-shadow:inset 0 0 18px rgba(77,232,194,.3);pointer-events:none}
+#idBadge{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:30px;font-weight:800;color:var(--faint);pointer-events:none}
+#idBadge.ok{color:var(--pen);text-shadow:0 0 24px rgba(77,232,194,.5)}
+#idBadge.warn{color:var(--amber)}
+.idcount{position:absolute;top:8px;right:10px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--faint)}
+.accwrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.target{width:140px;height:140px;border-radius:50%;border:1px solid var(--line2);position:relative;transition:.2s}
+.target::before{content:'';position:absolute;inset:24px;border-radius:50%;border:1px solid var(--line2)}
+.target::after{content:'';position:absolute;inset:48px;border-radius:50%;border:1px dashed rgba(77,232,194,.5)}
+.target i{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--pen);box-shadow:0 0 12px var(--pen)}
+.target.hit{transform:scale(.96)}
+.hitmark{position:absolute;width:8px;height:8px;margin:-4px;border-radius:50%;background:var(--coral);box-shadow:0 0 10px var(--coral);pointer-events:none;z-index:3}
+.hitmark.good{background:var(--pen);box-shadow:0 0 10px var(--pen)}
+.denyX{position:absolute;transform:translate(-50%,-50%);color:var(--coral);font-family:var(--mono);font-size:15px;pointer-events:none;z-index:3;animation:missf .6s forwards}
+.lab-notes{grid-column:span 12;display:flex;flex-direction:column;gap:8px;justify-content:center;padding:18px}
+.lab-notes p{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--dim)}
+.lab-notes p::before{content:'● ';color:var(--pen)}
+
+.spec{display:grid;grid-template-columns:70px 250px 1fr;gap:20px;padding:26px 8px;border-top:1px solid var(--line);align-items:start;transition:.25s}
+.spec:last-child{border-bottom:1px solid var(--line)}
+.spec:hover{background:rgba(77,232,194,.045)}
+.spec .gl{font-family:var(--disp);font-size:26px;color:var(--pen);line-height:1}
+.spec h4{font-size:16.5px;font-weight:800}
+.spec p{color:var(--dim);font-size:14px;max-width:640px}
+
+.footer{margin-top:90px;border-top:1px solid var(--line);padding:34px 0 46px;position:relative;z-index:2}
+.f-grid{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start}
+.f-note{font-size:10px;letter-spacing:.06em;color:var(--faint);max-width:560px;line-height:1.9}
+
+#toasts{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;background:#0e1520;border:1px solid var(--line2);color:var(--tx);padding:11px 18px;box-shadow:0 12px 30px -10px rgba(0,0,0,.7);animation:tIn .3s}
+.toast.err{border-color:rgba(255,110,110,.55);color:#ffb8b8}
+.toast.out{opacity:0;transform:translateY(8px);transition:.3s}
+@keyframes tIn{from{opacity:0;transform:translateY(10px)}}
+
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:980px){
+  .dv-grid,.hero-grid,.stage-wrap{grid-template-columns:1fr}
+  .dv-left{position:static}
+  .z5,.z6,.z7{grid-column:span 12}
+  .spec{grid-template-columns:52px 1fr}
+  .spec p{grid-column:2}
+}
+@media(max-width:680px){
+  .carts{grid-template-columns:1fr}
+  .dev-row{grid-template-columns:34px 1fr 22px}
+  .dev-row .tag{display:none}
+  .wrap{padding:0 16px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  #trailFx{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="glow g1"></div><div class="glow g2"></div>
+<canvas id="trailFx"></canvas>
+
+<!-- ================= ЭКРАН ВЫБОРА УСТРОЙСТВА ================= -->
+<section id="scrDevice" class="screen on">
+  <div class="wrap dv">
+    <header class="dv-top">
+      <div class="brand"><b>✦ STYLUS ONLY</b><span>S26 ULTRA PEN ARCADE</span></div>
+      <div class="mono tag-exp">● EXPERIMENTAL</div>
+    </header>
+    <div class="dv-grid">
+      <div class="dv-left">
+        <div class="kick">STYLUS ONLY · DEVICE SETUP</div>
+        <h1 class="display">ТОЛЬКО<br><span class="stroke">СТИЛУС.</span></h1>
+        <p class="dv-sub">Выбери устройство для настройки интерфейса. После выбора откроется главная страница.</p>
+        <div class="penline mono"><span class="led" id="ledA"></span><span id="ledTxtA">ОЖИДАНИЕ ПЕРА…</span><i class="caret"></i></div>
+        <p class="dv-note mono">Выбор сохраняется только в текущем открытом сайте и не меняет оригинальную систему обнаружения пера V2.</p>
+      </div>
+      <div class="dv-list">
+        <button class="dev-row" data-label="Samsung · Galaxy S">
+          <span class="idx">01</span>
+          <span><span class="nm">Samsung · Galaxy S</span><span class="ds">S Pen · Ultra и другие модели S-серии с поддержкой пера</span></span>
+          <span class="tag">S PEN</span><span class="arr">→</span>
+        </button>
+        <button class="dev-row" data-label="Samsung · Galaxy Note">
+          <span class="idx">02</span>
+          <span><span class="nm">Samsung · Galaxy Note</span><span class="ds">Смартфоны Note со встроенным S Pen</span></span>
+          <span class="tag">S PEN</span><span class="arr">→</span>
+        </button>
+        <button class="dev-row" data-label="Samsung · Galaxy Tab">
+          <span class="idx">03</span>
+          <span><span class="nm">Samsung · Galaxy Tab</span><span class="ds">Планшеты с поддержкой S Pen</span></span>
+          <span class="tag">TAB</span><span class="arr">→</span>
+        </button>
+        <button class="dev-row" data-label="Motorola · Moto G Stylus">
+          <span class="idx">04</span>
+          <span><span class="nm">Motorola · Moto G Stylus</span><span class="ds">Разные поколения Moto G Stylus</span></span>
+          <span class="tag">MOTO</span><span class="arr">→</span>
+        </button>
+        <button class="dev-row" data-label="Motorola · Edge и другие">
+          <span class="idx">05</span>
+          <span><span class="nm">Motorola · другие модели</span><span class="ds">Edge и другие устройства со стилусом</span></span>
+          <span class="tag">MOTO</span><span class="arr">→</span>
+        </button>
+        <button class="dev-row" data-label="Другой стилус">
+          <span class="idx">06</span>
+          <span><span class="nm">Другой стилус</span><span class="ds">USI, AES, EMR и совместимые перья</span></span>
+          <span class="tag">USI · AES · EMR</span><span class="arr">→</span>
+        </button>
+        <p class="dv-cont mono">→ выбор откроет главную автоматически</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ГЛАВНАЯ ================= -->
+<section id="scrMain" class="screen">
+
+  <div class="topbar">
+    <div class="wrap">
+      <div class="brand"><b>✦ STYLUS ONLY</b><span>S26 ULTRA PEN ARCADE</span></div>
+      <div class="tb-right">
+        <div class="penstat"><span class="led" id="ledB"></span><span id="ledTxtB">PEN OFFLINE</span></div>
+        <button class="chip" id="btnChange" title="Сменить модель">
+          <span class="mono dim" style="font-size:9px;letter-spacing:.18em">УСТРОЙСТВО:</span>
+          <b id="devChipName">—</b>
+          <span class="cx">СМЕНИТЬ ↺</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="kick">THE S PEN EXPERIENCE · 2026</div>
+        <h1 class="display hero-h">ТОЛЬКО<br><span class="stroke">СТИЛУС.</span></h1>
+        <p class="hero-sub">Мини-игры, тесты пера и интерактивные зоны. Главный контроллер — стилус.</p>
+        <div class="hero-cta">
+          <button class="btn solid" id="btnArcade">✦ Открыть аркаду</button>
+          <button class="btn" id="btnLab">Тесты стилуса ↓</button>
+        </div>
+        <div class="hero-stats mono"><span><b>[ 3 ]</b> ИГРЫ</span><span><b>[ 6 ]</b> ТЕСТОВ</span><span><b>[ 0 ]</b> СЕРВЕРОВ</span></div>
+      </div>
+      <div class="rv">
+        <div class="padbox corners">
+          <div class="pad-head mono"><span>РАЗМИНКА</span><span id="padState">ПОДПИШИСЬ ПЕРОМ ✦</span></div>
+          <canvas id="padCv"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="lane" id="tickLane"></div>
+  </div>
+
+  <!-- аркада -->
+  <section id="arcade" class="wrap sec">
+    <div class="sec-head rv">
+      <div>
+        <div class="kick">PEN-FIRST MODE · STYLUS DEVICE</div>
+        <h2 class="display h2">CHOOSE YOUR <span class="stroke">CHALLENGE</span></h2>
+        <p class="sec-sub">Мини-игры — 3 режима · только pen input ◎</p>
+      </div>
+      <div class="mono sec-tag">SEC.01 / ARCADE</div>
+    </div>
+
+    <div class="carts">
+      <button class="cart rv" data-game="rush" style="--acc:var(--amber)">
+        <span class="num">01</span><span class="ld">● ЗАГРУЖЕНО</span>
+        <div class="motif">
+          <span class="fdot" style="left:16%;top:32%"></span>
+          <span class="fdot" style="left:60%;top:58%;animation-delay:.5s"></span>
+          <span class="fdot" style="left:38%;top:74%;animation-delay:1s"></span>
+          <span class="fdot" style="left:78%;top:26%;animation-delay:.25s"></span>
+        </div>
+        <div><h3>Photon Rush</h3><span class="kind">01 / REFLEX ⌁</span></div>
+        <p>Лови вспышки за 20 секунд. Точность важнее скорости.</p>
+        <span class="go">Играть →</span>
+      </button>
+      <button class="cart rv" data-game="orbit" style="transition-delay:.08s">
+        <span class="num">02</span><span class="ld">● ЗАГРУЖЕНО</span>
+        <div class="motif">
+          <svg viewBox="0 0 120 120"><g class="spin"><circle cx="60" cy="60" r="38" fill="none" stroke="rgba(77,232,194,.55)" stroke-dasharray="5 7"/><circle cx="60" cy="22" r="4.5" fill="#4de8c2"/></g><circle cx="60" cy="60" r="6" fill="none" stroke="#ffb454" stroke-width="1.5"/></svg>
+        </div>
+        <div><h3>Orbit Trace</h3><span class="kind">02 / CONTROL ✧</span></div>
+        <p>Проведи пером по контрольным точкам и замкни орбиту.</p>
+        <span class="go">Играть →</span>
+      </button>
+      <button class="cart rv" data-game="zen" style="--acc:var(--violet);transition-delay:.16s">
+        <span class="num">03</span><span class="ld">● ЗАГРУЖЕНО</span>
+        <div class="motif">
+          <svg viewBox="0 0 160 90" preserveAspectRatio="none"><path class="zline" d="M0,60 C30,18 52,82 82,44 S132,18 160,56" fill="none" stroke="#9d8cff" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <div><h3>Zen Canvas</h3><span class="kind">03 / CREATE ✦</span></div>
+        <p>Рисуй световые линии. Толщина зависит от давления пера.</p>
+        <span class="go">Рисовать →</span>
+      </button>
+    </div>
+
+    <div class="stage-wrap" id="stageWrap">
+      <div class="stage corners rv" id="stage">
+        <canvas id="stageCv"></canvas>
+        <div id="targets"></div>
+        <div class="zring" id="zenRing"></div>
+        <div class="hud">
+          <span id="hudMode">MODE —</span>
+          <span id="hudTime">00:00</span>
+          <span>SCORE <b id="hudScore">000</b></span>
+        </div>
+        <div id="stageMsg" class="smsg">
+          <div class="msg-sub">ВЫБЕРИ ИГРУ ВЫШЕ</div>
+          <div class="msg-big dim2">АРКАДА ЖДЁТ ТВОЙ СТИЛУС</div>
+        </div>
+      </div>
+      <aside class="side rv">
+        <div class="side-box">
+          <div class="rt" id="rulesTitle">ВЫБЕРИ ИГРУ ВЫШЕ</div>
+          <p id="rulesText">Выбери игру, чтобы увидеть правила.</p>
+        </div>
+        <div class="side-box scorebox">
+          <span class="mono dim" style="font-size:10px;letter-spacing:.2em">SCORE</span>
+          <b class="display-num" id="sideScore">000</b>
+          <span class="mono" id="inputState">INPUT: WAITING FOR PEN</span>
+        </div>
+        <div class="ctrls">
+          <button class="btn" id="btnStart">▶ Старт</button>
+          <button class="btn dis" id="btnPause">⏸ Пауза</button>
+          <button class="btn dis" id="btnReset">↻ Сбросить</button>
+          <button class="btn dis" id="btnStop">■ Завершить</button>
+        </div>
+        <p class="tiny mono" id="sideNote">Аркада ждёт твой стилус. Выбери игру и нажми «Старт». Палец и мышь не засчитываются.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- лаборатория -->
+  <section id="lab" class="wrap sec">
+    <div class="sec-head rv">
+      <div>
+        <div class="kick">HARDWARE CHECK LAB</div>
+        <h2 class="display h2">ТЕСТОВЫЕ ЗОНЫ <span class="stroke">СТИЛУСА</span></h2>
+        <p class="sec-sub">Коснись каждой зоны пером</p>
+      </div>
+      <div class="mono sec-tag">SEC.02 / LAB</div>
+    </div>
+
+    <div class="zgrid">
+      <div class="zone z5 rv">
+        <div class="zhead"><span class="znum">01</span><h4>Pressure test</h4></div>
+        <p class="zdesc">Показывает силу нажатия, если браузер передаёт pressure (0–1).</p>
+        <div class="zpad" id="padP">
+          <div class="pdot" id="pDot"></div>
+          <div class="pbar"><div class="pfill" id="pFill"></div></div>
+          <span class="zhint">Нажимай и меняй силу пера здесь</span>
+          <span class="zread" id="pRead">PRESSURE: —</span>
+        </div>
+      </div>
+
+      <div class="zone z7 rv">
+        <div class="zhead"><span class="znum">02</span><h4>Tilt test</h4></div>
+        <p class="zdesc">Проверка наклона пера по осям X и Y.</p>
+        <div class="zpad" id="padT">
+          <div class="tbub"><span class="tdot" id="tDot"></span></div>
+          <span class="zhint">Наклоняй <span class="pw">стилус</span> в этой зоне</span>
+          <span class="zread" id="tRead">TILT X: — · Y: —</span>
+        </div>
+      </div>
+
+      <div class="zone z12 rv">
+        <div class="zhead"><span class="znum">03</span><h4>Tracking test</h4></div>
+        <p class="zdesc">Проведи стилусом по зоне — появится след движения и число точек.</p>
+        <div class="zpad" id="padTrk" style="min-height:130px">
+          <canvas id="trkCv"></canvas>
+          <button class="zreset" id="trkReset">↻ CLEAR</button>
+          <span class="zhint">Веди пером по этой площадке</span>
+          <span class="zread" id="trkRead">TRACK POINTS: 0</span>
+        </div>
+      </div>
+
+      <div class="zone z6 rv">
+        <div class="zhead"><span class="znum">04</span><h4>Hover / proximity</h4></div>
+        <p class="zdesc">Проверка событий наведения без касания экрана. Поддержка зависит от браузера и digitizer.</p>
+        <div class="zpad" id="padH">
+          <span class="hring" id="hRing"></span>
+          <span class="zhint">Поднеси перо близко к экрану</span>
+          <span class="zread" id="hRead">HOVER: WAITING</span>
+        </div>
+      </div>
+
+      <div class="zone z6 rv">
+        <div class="zhead"><span class="znum">05</span><h4>Pointer identity</h4></div>
+        <p class="zdesc">Показывает тип указателя, который видит сайт: pen, touch или mouse.</p>
+        <div class="zpad" id="padI">
+          <span id="idBadge">?</span>
+          <span class="idcount" id="idCount">PEN 0 · TOUCH 0 · MOUSE 0</span>
+          <span class="zhint">Коснись этой зоны любым способом</span>
+          <span class="zread" id="iRead">POINTER: —</span>
+        </div>
+      </div>
+
+      <div class="zone z7 rv">
+        <div class="zhead"><span class="znum">06</span><h4>Accuracy test</h4></div>
+        <p class="zdesc">Нажми стилусом точно в центр мишени. Проверяется отклонение от центра.</p>
+        <div class="zpad" id="padA" style="min-height:190px">
+          <div class="accwrap"><div class="target" id="accT"><i></i></div></div>
+          <span class="zhint" style="align-items:flex-end;padding-bottom:34px">◎ Нажми точно в центр</span>
+          <span class="zread" id="aRead">ACCURACY: WAITING</span>
+        </div>
+      </div>
+
+      <div class="zone z5 lab-notes rv">
+        <p>Все тесты локальные — данные никуда не отправляются.</p>
+        <p>Если палец определяется как touch, он будет отклонён.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- технология -->
+  <section class="wrap sec">
+    <div class="sec-head rv">
+      <div>
+        <div class="kick">PEN TECHNOLOGY</div>
+        <h2 class="display h2">СОЗДАНО <span class="stroke">ВОКРУГ ПЕРА</span></h2>
+      </div>
+      <div class="mono sec-tag">SEC.03 / TECH</div>
+    </div>
+    <div class="rv">
+      <div class="spec"><span class="gl">⟡</span><h4>Pen-only управление</h4><p>Игровые действия засчитываются, только если браузер сообщает pointerType&nbsp;=&nbsp;pen.</p></div>
+      <div class="spec"><span class="gl">◌</span><h4>Давление и наклон</h4><p>Используем pressure и tiltX / tiltY, если они доступны устройству и браузеру.</p></div>
+      <div class="spec"><span class="gl">⌖</span><h4>Мгновенная реакция</h4><p>Счёт, попадания и промахи обновляются во время игры — без задержек и перезагрузок.</p></div>
+      <div class="spec"><span class="gl">✦</span><h4>Локальная работа</h4><p>Не требует аккаунта, сервера или установки приложения. Всё происходит в браузере.</p></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap f-grid">
+      <div class="brand"><b>✦ STYLUS ONLY</b><span>S26 ULTRA PEN ARCADE</span></div>
+      <p class="mono f-note">Независимый экспериментальный проект, не официальный продукт Samsung. Совместимость зависит от браузера и передачи Pointer Events. Сайт не подтверждает модель телефона или сертификацию Samsung.</p>
+    </div>
+  </footer>
+</section>
+
+<div id="toasts"></div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pad3=n=>String(clamp(Math.round(n),0,999)).padStart(3,'0');
+const fmtT=s=>{s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+document.addEventListener('selectstart',e=>e.preventDefault());
+
+/* ============ PEN-LOCK: анти-ладонь ============ */
+let penIsDown=false;
+addEventListener('pointerdown',e=>{if(e.pointerType==='pen')penIsDown=true;},true);
+addEventListener('pointerup',e=>{if(e.pointerType==='pen')penIsDown=false;},true);
+addEventListener('pointercancel',e=>{if(e.pointerType==='pen')penIsDown=false;},true);
+const isPalm=e=>e.pointerType!=='pen'&&penIsDown;
+const isPen=e=>e.pointerType==='pen';
+
+/* ============ ИМЯ ПЕРА ПО БРЕНДУ ============ */
+const PEN_PROFILE={
+  'Samsung · Galaxy S':        {name:'S Pen',  short:'S PEN'},
+  'Samsung · Galaxy Note':     {name:'S Pen',  short:'S PEN'},
+  'Samsung · Galaxy Tab':      {name:'S Pen',  short:'S PEN'},
+  'Motorola · Moto G Stylus':  {name:'стилус', short:'STYLUS'},
+  'Motorola · Edge и другие':  {name:'стилус', short:'STYLUS'},
+  'Другой стилус':             {name:'стилус', short:'STYLUS'}
+};
+function penProfile(){return PEN_PROFILE[S.device]||{name:'стилус',short:'PEN'};}
+const penName=()=>penProfile().name;
+
+function updatePenLabels(){
+  const p=penProfile();
+  $$('.pw').forEach(el=>el.textContent=p.name);
+  $('#sideNote').textContent=`Аркада ждёт твой ${p.name}. Выбери игру и нажми «Старт». Палец и мышь не засчитываются.`;
+  if(!S.penSeen){
+    $('#ledTxtB').textContent=p.short+' · OFFLINE';
+    $('#ledTxtA').textContent='ОЖИДАНИЕ: '+p.name.toUpperCase()+'…';
+  }else{
+    $('#ledTxtB').textContent=p.short+' · ONLINE';
+    $('#ledTxtB').classList.add('ok');
+    $('#ledTxtA').textContent=p.name.toUpperCase()+' · ONLINE';
+    $('#ledTxtA').classList.add('ok');
+  }
+  if(!G.mode)msgEl.innerHTML=idleMsg();
+}
+function idleMsg(){
+  return `<div class="msg-sub">ВЫБЕРИ ИГРУ ВЫШЕ</div><div class="msg-big dim2">АРКАДА ЖДЁТ ТВОЙ ${penName().toUpperCase()}</div>`;
+}
+
+/* единый отклик отклонения для зон */
+let denyFlashT=0, denyToastT=0;
+function denyZone(pad,readEl,text,silentToast){
+  if(readEl){readEl.textContent=text;readEl.classList.add('err');}
+  const now=performance.now();
+  if(pad&&now-denyFlashT>800){
+    denyFlashT=now;
+    pad.classList.remove('deny');void pad.offsetWidth;pad.classList.add('deny');
+  }
+  if(!silentToast&&now-denyToastT>2600){
+    denyToastT=now;
+    toast(`Нужен ${penName()} — палец и мышь не засчитываются`,'err');
+  }
+}
+function readOk(readEl,text){if(readEl){readEl.textContent=text;readEl.classList.remove('err');}}
+
+/* бегущая строка */
+(function(){
+  const items=['S PEN','PRESSURE 0–1','TILT X/Y','HOVER','EMR','USI','AES','PEN-FIRST','NO ACCOUNT','LOCAL ONLY'];
+  const half=items.map(t=>`<span>${t} <em>✦</em></span>`).join('');
+  $('#tickLane').innerHTML=half+half;
+})();
+
+/* ---------- состояние / экраны ---------- */
+const S={device:null,penSeen:false};
+const DEVKEY='so_dev_v2';
+const scrDev=$('#scrDevice'), scrMain=$('#scrMain');
+const msgEl=$('#stageMsg');
+const G={mode:null,running:false,paused:false};
+
+function updateChip(){ if(S.device) $('#devChipName').textContent=S.device; }
+function showMain(){
+  scrDev.classList.remove('on'); scrMain.classList.add('on');
+  window.scrollTo({top:0}); updateChip(); updatePenLabels();
+  requestAnimationFrame(()=>{fitAll();});
+}
+function showDevice(){
+  scrMain.classList.remove('on'); scrDev.classList.add('on');
+  window.scrollTo({top:0}); updatePenLabels();
+}
+$$('.dev-row').forEach(row=>{
+  row.addEventListener('click',()=>{
+    S.device=row.dataset.label;
+    try{sessionStorage.setItem(DEVKEY,S.device)}catch(e){}
+    $$('.dev-row').forEach(r=>r.classList.toggle('picked',r===row));
+    updatePenLabels();
+    setTimeout(showMain,340);
+  });
+});
+$('#btnChange').addEventListener('click',showDevice);
+
+/* ---------- индикатор пера ---------- */
+function markPen(e){
+  if(isPen(e)&&!S.penSeen){
+    S.penSeen=true;
+    ['#ledA','#ledB'].forEach(id=>$(id).classList.add('on'));
+    const p=penProfile();
+    const a=$('#ledTxtA');a.textContent=p.name.toUpperCase()+' · ONLINE';a.classList.add('ok');
+    const b=$('#ledTxtB');a.textContent&&0; b.textContent=p.short+' · ONLINE';b.classList.add('ok');
+  }
+}
+addEventListener('pointerdown',markPen,{passive:true});
+addEventListener('pointermove',markPen,{passive:true});
+
+/* ---------- тосты ---------- */
+function toast(msg,kind){
+  const box=$('#toasts'),t=document.createElement('div');
+  t.className='toast'+(kind?' '+kind:'');t.textContent=msg;box.appendChild(t);
+  while(box.children.length>3)box.firstChild.remove();
+  setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),350)},2500);
+}
+
+/* ---------- глобальный след пера (декор) ---------- */
+const tfx=$('#trailFx'),tc=tfx.getContext('2d');let tp=[];
+function sizeTrail(){
+  const d=Math.min(2,devicePixelRatio||1);
+  tfx.width=innerWidth*d;tfx.height=innerHeight*d;
+  tfx.style.width=innerWidth+'px';tfx.style.height=innerHeight+'px';
+  tc.setTransform(d,0,0,d,0,0);
+}
+if(!reduced){
+  sizeTrail();addEventListener('resize',sizeTrail);
+  addEventListener('pointermove',e=>{
+    tp.push({x:e.clientX,y:e.clientY,t:performance.now(),pen:isPen(e)});
+    if(tp.length>90)tp.shift();
+  },{passive:true});
+}
+
+/* ---------- появление при скролле ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+}),{threshold:.12});
+$$('.rv').forEach(el=>io.observe(el));
+
+/* ---------- канвасы ---------- */
+function fitCanvas(cv){
+  const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);
+  if(r.width<2)return cv.getContext('2d');
+  cv.width=r.width*d;cv.height=r.height*d;
+  const c=cv.getContext('2d');c.setTransform(d,0,0,d,0,0);return c;
+}
+const stage=$('#stage'),targetLayer=$('#targets'),zenRing=$('#zenRing');
+let sctx=$('#stageCv').getContext('2d'),trkCtx,padCtx;
+
+/* разминка в герое — ТОЛЬКО ПЕРО */
+const pad=$('#padCv');let padDraw=false,padLast=null,padIdle=0;
+function padPos(e){const r=pad.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+pad.addEventListener('pointerdown',e=>{
+  if(!isPen(e)){
+    if(isPalm(e))return;
+    const ps=$('#padState');ps.textContent='ТОЛЬКО ПЕРО ✦';ps.classList.add('err');
+    const box=pad.closest('.padbox');
+    box.classList.remove('deny');void box.offsetWidth;box.classList.add('deny');
+    return;
+  }
+  pad.setPointerCapture(e.pointerId);padDraw=true;padLast=padPos(e);padIdle=performance.now();
+  const ps=$('#padState');ps.classList.remove('err');ps.textContent='PEN: OK ✦';
+});
+pad.addEventListener('pointermove',e=>{
+  if(!padDraw||!isPen(e))return;
+  const p=padPos(e);
+  const w=1.5+(e.pressure||.35)*13;
+  padCtx.lineCap='round';padCtx.strokeStyle='#4de8c2';
+  padCtx.lineWidth=w;padCtx.shadowBlur=10;padCtx.shadowColor='rgba(77,232,194,.6)';
+  padCtx.beginPath();padCtx.moveTo(padLast.x,padLast.y);padCtx.lineTo(p.x,p.y);padCtx.stroke();padCtx.shadowBlur=0;
+  padLast=p;padIdle=performance.now();
+});
+['pointerup','pointercancel'].forEach(t=>pad.addEventListener(t,()=>padDraw=false));
+pad.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ---------- АРКАДА ---------- */
+const hudMode=$('#hudMode'),hudTime=$('#hudTime'),hudScore=$('#hudScore'),sideScore=$('#sideScore'),
+      inputState=$('#inputState'),rulesTitle=$('#rulesTitle'),rulesText=$('#rulesText');
+const NAMES={rush:'PHOTON RUSH',orbit:'ORBIT TRACE',zen:'ZEN CANVAS'};
+const RULES={
+  rush:{t:'01 · PHOTON RUSH — REFLEX',p:'Вспышки загораются по всему полю и живут ~1.5 секунды. Касайся их пером. 20 секунд. Промахи снижают точность.'},
+  orbit:{t:'02 · ORBIT TRACE — CONTROL',p:'Стартуй из точки START, веди перо по точкам 1–8 не отрываясь и вернись к старту, чтобы замкнуть орбиту. Оторвёшь перо — контур сбросится.'},
+  zen:{t:'03 · ZEN CANVAS — CREATE',p:'Свободное рисование: чем сильнее нажим, тем толще линия. Счёт растёт вместе с длиной. «Сбросить» очищает холст.'}
+};
+let R=null,O=null,Z=null,lastT=0,penWarned=false,OG=null,rejectT=0;
+
+function setScore(v){hudScore.textContent=pad3(v);sideScore.textContent=pad3(v);}
+function setInput(txt,cls){inputState.textContent=txt;inputState.className='mono '+(cls||'');}
+function clearTargets(){targetLayer.innerHTML='';}
+function stagePos(e){const r=stage.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+function updateCtrls(){
+  const on=G.mode&&G.running;
+  $('#btnPause').classList.toggle('dis',!on);
+  $('#btnReset').classList.toggle('dis',!G.mode);
+  $('#btnStop').classList.toggle('dis',!on);
+  $('#btnStart').textContent=(on&&!G.paused)?'↻ Заново':'▶ Старт';
+  $('#btnPause').textContent=G.paused?'▶ Дальше':'⏸ Пауза';
+}
+function readyMsg(){return `<div class="msg-sub">РЕЖИМ ЗАГРУЖЕН</div><div class="msg-big">${NAMES[G.mode]}</div><div class="msg-sub">НАЖМИ «СТАРТ»</div>`;}
+
+function resetStage(){
+  clearTargets();setScore(0);hudTime.textContent='00:00';
+  if(sctx)sctx.clearRect(0,0,stage.clientWidth,stage.clientHeight);
+  setInput('INPUT: WAITING FOR PEN');zenRing.style.display='none';
+}
+function loadGame(id){
+  G.running=false;G.paused=false;G.mode=id;R=O=Z=null;
+  $$('.cart').forEach(c=>c.classList.toggle('sel',c.dataset.game===id));
+  rulesTitle.textContent=RULES[id].t;rulesText.textContent=RULES[id].p;
+  hudMode.textContent=NAMES[id];
+  resetStage();msgEl.innerHTML=readyMsg();updateCtrls();
+}
+$$('.cart').forEach(c=>c.addEventListener('click',()=>{
+  loadGame(c.dataset.game);
+  $('#stageWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}));
+
+function startGame(){
+  if(!G.mode){toast('Сначала выбери игру','err');return;}
+  penWarned=false;resetStage();
+  G.running=true;G.paused=false;lastT=performance.now();
+  msgEl.innerHTML='';setInput('INPUT: WAITING FOR PEN');
+  if(G.mode==='rush')rushStart();else if(G.mode==='orbit')orbitStart();else zenStart();
+  updateCtrls();
+  if(!S.penSeen)setTimeout(()=>{
+    if(G.running&&!S.penSeen&&!penWarned){
+      penWarned=true;
+      toast(`${penName()==='S Pen'?'S Pen':'Стилус'} не обнаружен — браузер не передаёт события пера`,'err');
+    }
+  },4000);
+}
+function togglePause(){
+  if(!G.running)return;
+  G.paused=!G.paused;
+  if(!G.paused)lastT=performance.now();
+  msgEl.innerHTML=G.paused?'<div class="msg-big">ПАУЗА</div><div class="msg-sub">НАЖМИ «ДАЛЬШЕ»</div>':'';
+  updateCtrls();
+}
+function stopRun(){G.running=false;G.paused=false;clearTargets();updateCtrls();}
+
+$('#btnStart').addEventListener('click',startGame);
+$('#btnPause').addEventListener('click',togglePause);
+$('#btnReset').addEventListener('click',()=>{if(!G.mode)return;stopRun();resetStage();msgEl.innerHTML=readyMsg();});
+$('#btnStop').addEventListener('click',()=>{
+  if(!G.mode)return;stopRun();resetStage();
+  msgEl.innerHTML='<div class="msg-sub">СЕССИЯ ЗАВЕРШЕНА</div><div class="msg-big dim2">ВЫБЕРИ РЕЖИМ</div>';
+});
+$('#btnArcade').addEventListener('click',()=>$('#arcade').scrollIntoView({behavior:'smooth'}));
+$('#btnLab').addEventListener('click',()=>$('#lab').scrollIntoView({behavior:'smooth'}));
+
+function markInputOk(){setInput('INPUT: PEN ACTIVE','ok');}
+function rejectInput(e){
+  setInput('INPUT: '+String(e.pointerType).toUpperCase()+' — ОТКЛОНЁН','err');
+  const now=performance.now();
+  if(now-rejectT>2200){rejectT=now;toast(`Палец и мышь не засчитываются — нужен ${penName()}`,'err');}
+}
+function burst(x,y){
+  const b=document.createElement('span');b.className='burst';
+  b.style.left=x+'px';b.style.top=y+'px';
+  targetLayer.appendChild(b);setTimeout(()=>b.remove(),480);
+}
+function missMark(x,y){
+  const m=document.createElement('span');m.className='missx';m.textContent='✕';
+  m.style.left=x+'px';m.style.top=y+'px';
+  targetLayer.appendChild(m);setTimeout(()=>m.remove(),520);
+}
+
+/* --- Photon Rush --- */
+function rushStart(){R={t:0,next:.5,hits:0,taps:0,streak:0,score:0,items:[]};}
+function spawnPhoton(){
+  const fx=.08+Math.random()*.84, fy=.18+Math.random()*.68;
+  const el=document.createElement('div');el.className='photon';
+  el.style.left=(fx*100)+'%';el.style.top=(fy*100)+'%';
+  el.innerHTML='<span class="ring"></span><span class="core"></span>';
+  targetLayer.appendChild(el);
+  R.items.push({el,fx,fy,r:38,age:0,dead:false});
+}
+function rushUpdate(dt){
+  R.t+=dt;hudTime.textContent=fmtT(20-R.t);
+  R.next-=dt;
+  if(R.next<=0){spawnPhoton();R.next=.72+Math.random()*.4;}
+  for(const it of R.items){
+    it.age+=dt;
+    if(!it.dead&&it.age>1.5){it.dead=true;it.el.classList.add('out');setTimeout(()=>it.el.remove(),200);}
+  }
+  R.items=R.items.filter(i=>i.age<1.8);
+  if(R.t>=20)rushEnd();
+}
+function rushEnd(){
+  stopRun();
+  const acc=R.taps?Math.round(R.hits/R.taps*100):0;
+  const grade=(acc>=85&&R.hits>=12)?'S · ИДЕАЛЬНО':acc>=70?'A · ОТЛИЧНО':acc>=50?'B · ХОРОШО':'C · ТРЕНИРУЙСЯ';
+  msgEl.innerHTML=`<div class="msg-sub">ВРЕМЯ ВЫШЛО</div><div class="msg-big">SCORE ${pad3(R.score)}</div><div class="msg-sub">${R.hits} ПОПАДАНИЙ · ТОЧНОСТЬ ${acc}% · ${grade}</div>`;
+  setInput('INPUT: RUN COMPLETE','ok');
+}
+
+/* --- Orbit Trace --- */
+function ptOn(cx,cy,rx,ry,rot,a){
+  const x=Math.cos(a)*rx,y=Math.sin(a)*ry;
+  return{x:cx+x*Math.cos(rot)-y*Math.sin(rot),y:cy+x*Math.sin(rot)+y*Math.cos(rot)};
+}
+function orbitGeom(){
+  const w=stage.clientWidth,h=stage.clientHeight;
+  const cx=w/2,cy=h/2+14,rx=Math.min(w*.38,h*.34),ry=rx*.8,rot=-.12;
+  OG={cx,cy,rx,ry,rot};
+  const nodes=[];for(let i=0;i<8;i++)nodes.push(ptOn(cx,cy,rx,ry,rot,-Math.PI/2+i*Math.PI/4));
+  const samples=[];for(let i=0;i<240;i++)samples.push(ptOn(cx,cy,rx,ry,rot,i/240*Math.PI*2));
+  OG.nodes=nodes;OG.samples=samples;
+}
+function orbitStart(){orbitGeom();O={t:0,state:'ready',next:1,trail:[],devSum:0,devN:0,score:0,done:false};}
+function orbitUpdate(dt){
+  O.t+=dt;hudTime.textContent=fmtT(O.t);
+  drawOrbit();
+  if(O.t>=60&&!O.done)orbitEnd(false);
+}
+function drawOrbit(){
+  const c=sctx,w=stage.clientWidth,h=stage.clientHeight,now=performance.now();
+  c.clearRect(0,0,w,h);
+  c.setLineDash([6,8]);c.lineDashOffset=-(now/60)%14;
+  c.strokeStyle='rgba(77,232,194,.35)';c.lineWidth=1.2;
+  c.beginPath();c.ellipse(OG.cx,OG.cy,OG.rx,OG.ry,OG.rot,0,Math.PI*2);c.stroke();c.setLineDash([]);
+  const collected=O.next-1;
+  OG.nodes.forEach((n,i)=>{
+    const isCol=i<collected||(O.next>8&&i>0&&i<8), isNext=(O.state==='draw'&&i===O.next)||(O.next>8&&i===0), isStart=i===0;
+    c.beginPath();c.arc(n.x,n.y,9,0,Math.PI*2);
+    c.fillStyle=isCol?'rgba(77,232,194,.9)':'#0c1219';c.fill();
+    c.lineWidth=isNext?2:1.3;c.strokeStyle=isStart?'#ffb454':(isNext?'#4de8c2':'rgba(146,178,206,.5)');c.stroke();
+    if(isNext){
+      c.beginPath();c.arc(n.x,n.y,13+3*Math.sin(now/180),0,Math.PI*2);
+      c.strokeStyle='rgba(77,232,194,.5)';c.lineWidth=1;c.stroke();
+    }
+    c.fillStyle=isCol?'#06231b':'rgba(223,233,242,.8)';
+    c.font='600 9px JetBrains Mono';c.textAlign='center';c.textBaseline='middle';
+    c.fillText(isStart?'S':String(i),n.x,n.y+.5);
+  });
+  c.fillStyle='rgba(255,180,84,.85)';c.font='600 9px JetBrains Mono';
+  c.fillText('START',OG.nodes[0].x,OG.nodes[0].y-20);
+  if(O.trail.length>1){
+    c.beginPath();c.moveTo(O.trail[0].x,O.trail[0].y);
+    for(let i=1;i<O.trail.length;i++)c.lineTo(O.trail[i].x,O.trail[i].y);
+    c.strokeStyle='rgba(77,232,194,.9)';c.lineWidth=2.5;c.lineCap='round';c.lineJoin='round';
+    c.shadowBlur=12;c.shadowColor='rgba(77,232,194,.7)';c.stroke();c.shadowBlur=0;
+  }
+}
+function closeOrbit(){
+  O.done=true;stopRun();
+  const tb=Math.max(0,Math.round((60-O.t)*16));
+  const avg=O.devN?O.devSum/O.devN:40;
+  const ab=Math.max(0,Math.round(500-avg*12));
+  O.score=1000+tb+ab;setScore(O.score);
+  msgEl.innerHTML=`<div class="msg-sub">ОРБИТА ЗАМКНУТА ✧</div><div class="msg-big">SCORE ${pad3(O.score)}</div><div class="msg-sub">ВРЕМЯ ${fmtT(O.t)} · СР. ОТКЛОНЕНИЕ ${avg.toFixed(1)} PX</div>`;
+  setInput('INPUT: ORBIT CLOSED','ok');
+}
+function orbitEnd(){
+  stopRun();setScore((O.next-1)*120);
+  msgEl.innerHTML=`<div class="msg-sub">ВРЕМЯ ВЫШЛО</div><div class="msg-big">ТОЧЕК ${O.next-1}/8</div><div class="msg-sub">SCORE ${pad3((O.next-1)*120)}</div>`;
+}
+
+/* --- Zen Canvas --- */
+function zenStart(){Z={len:0,t:0,last:null,drawing:false};}
+function zenUpdate(dt){Z.t+=dt;hudTime.textContent=fmtT(Z.t);}
+
+/* --- события сцены (вход только для пера) --- */
+stage.addEventListener('contextmenu',e=>e.preventDefault());
+stage.addEventListener('pointerdown',e=>{
+  if(!G.running||G.paused)return;
+  if(!isPen(e)){
+    if(!isPalm(e))rejectInput(e);
+    return;
+  }
+  stage.setPointerCapture(e.pointerId);
+  markInputOk();
+  const p=stagePos(e);
+  if(G.mode==='rush'){
+    R.taps++;
+    const r=stage.getBoundingClientRect();
+    let hit=null;
+    for(let i=R.items.length-1;i>=0;i--){
+      const it=R.items[i];if(it.dead)continue;
+      if(Math.hypot(p.x-it.fx*r.width,p.y-it.fy*r.height)<=it.r+8){hit=it;break;}
+    }
+    if(hit){
+      hit.dead=true;hit.el.classList.add('out');setTimeout(()=>hit.el.remove(),180);
+      R.hits++;R.streak++;R.score+=100+(R.streak-1)*15;setScore(R.score);burst(p.x,p.y);
+    }else{R.streak=0;missMark(p.x,p.y);}
+  }else if(G.mode==='orbit'){
+    if(O.state==='ready'){
+      if(dist(p,OG.nodes[0])<=30){O.state='draw';O.trail=[p];}
+      else toast('Начни с точки START','err');
+    }
+  }else if(G.mode==='zen'){
+    Z.drawing=true;Z.last=p;zenRing.style.display='none';
+  }
+});
+stage.addEventListener('pointermove',e=>{
+  if(G.mode==='zen'){
+    if(isPen(e)&&e.buttons===0&&!G.paused){
+      const p=stagePos(e);
+      zenRing.style.display='block';zenRing.style.left=p.x+'px';zenRing.style.top=p.y+'px';
+    }else zenRing.style.display='none';
+  }
+  if(!G.running||G.paused||!isPen(e))return;
+  if(G.mode==='orbit'&&O.state==='draw'){
+    const p=stagePos(e);
+    const last=O.trail[O.trail.length-1];
+    if(!last||dist(p,last)>2){
+      O.trail.push(p);
+      let mn=1e9;for(const s of OG.samples){const d=dist(p,s);if(d<mn)mn=d;}
+      O.devSum+=mn;O.devN++;
+      if(O.next<=8&&dist(p,OG.nodes[O.next])<=26)O.next++;
+      if(O.next>8&&dist(p,OG.nodes[0])<=28)closeOrbit();
+    }
+  }else if(G.mode==='zen'&&Z.drawing){
+    const p=stagePos(e),d=dist(p,Z.last);
+    if(d>0.5){
+      Z.len+=d;
+      const w=1.6+(e.pressure||.35)*15;
+      const hue=185+95*Math.sin(Z.len*.004);
+      sctx.lineCap='round';sctx.lineWidth=w;
+      sctx.strokeStyle=`hsl(${hue} 90% 68%)`;
+      sctx.shadowBlur=14;sctx.shadowColor=`hsla(${hue},90%,65%,.8)`;
+      sctx.beginPath();sctx.moveTo(Z.last.x,Z.last.y);sctx.lineTo(p.x,p.y);sctx.stroke();sctx.shadowBlur=0;
+      Z.last=p;setScore(Z.len/60);
+    }
+  }
+});
+['pointerup','pointercancel'].forEach(t=>stage.addEventListener(t,e=>{
+  if(G.mode==='orbit'&&O&&O.state==='draw'&&G.running){
+    O.state='ready';O.trail=[];O.next=1;O.devSum=0;O.devN=0;
+    toast('Перо оторвано — орбита сброшена','err');
+  }
+  if(G.mode==='zen'&&Z)Z.drawing=false;
+}));
+
+/* ---------- ЛАБОРАТОРИЯ (всё только для пера) ---------- */
+function posOn(e,el){const r=el.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+
+/* 01 pressure */
+const padP=$('#padP'),pFill=$('#pFill'),pDot=$('#pDot'),pRead=$('#pRead');
+function pEvent(e){
+  padP.classList.add('used');
+  const v=clamp(e.pressure||0,0,1);
+  pFill.style.width=(v*100)+'%';
+  pDot.style.transform=`translate(-50%,-50%) scale(${.6+v*1.7})`;
+  readOk(pRead,`PRESSURE: ${v.toFixed(2)}`);
+}
+padP.addEventListener('pointerdown',e=>{
+  if(!isPen(e)){if(!isPalm(e))denyZone(padP,pRead,'PRESSURE: ОТКЛОНЁН · ТОЛЬКО ПЕРО');return;}
+  padP.setPointerCapture(e.pointerId);pEvent(e);
+});
+padP.addEventListener('pointermove',e=>{
+  if(!e.buttons||!isPen(e))return;
+  pEvent(e);
+});
+padP.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* 02 tilt */
+const padT=$('#padT'),tDot=$('#tDot'),tRead=$('#tRead');
+padT.addEventListener('pointermove',e=>{
+  if(!isPen(e)){
+    if(isPalm(e))return;
+    denyZone(padT,tRead,'ОТКЛОНЁН · ТОЛЬКО ПЕРО',true);
+    return;
+  }
+  padT.classList.add('used');
+  const tx=e.tiltX||0,ty=e.tiltY||0;
+  tDot.style.transform=`translate(calc(-50% + ${clamp(tx,-60,60)*.9}px),calc(-50% + ${clamp(ty,-60,60)*.9}px))`;
+  readOk(tRead,`TILT X: ${tx} · Y: ${ty}`);
+});
+padT.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* 03 tracking */
+const padTrk=$('#padTrk'),trkCv=$('#trkCv'),trkRead=$('#trkRead');
+let trkPts=0,trkLast=null;
+padTrk.addEventListener('pointerdown',e=>{
+  if(!isPen(e)){if(!isPalm(e))denyZone(padTrk,trkRead,'ОТКЛОНЁН · ТОЛЬКО ПЕРО');return;}
+  padTrk.setPointerCapture(e.pointerId);
+  padTrk.classList.add('used');
+  trkLast=posOn(e,padTrk);
+});
+padTrk.addEventListener('pointermove',e=>{
+  if(!e.buttons||!isPen(e))return;
+  const p=posOn(e,padTrk);
+  if(trkLast){
+    trkCtx.lineCap='round';trkCtx.lineWidth=2;
+    trkCtx.strokeStyle='rgba(77,232,194,.9)';
+    trkCtx.beginPath();trkCtx.moveTo(trkLast.x,trkLast.y);trkCtx.lineTo(p.x,p.y);trkCtx.stroke();
+    trkPts++;readOk(trkRead,'TRACK POINTS: '+trkPts);
+  }
+  trkLast=p;
+});
+['pointerup','pointercancel'].forEach(t=>padTrk.addEventListener(t,()=>trkLast=null));
+padTrk.addEventListener('contextmenu',e=>e.preventDefault());
+$('#trkReset').addEventListener('click',e=>{
+  e.stopPropagation();trkPts=0;readOk(trkRead,'TRACK POINTS: 0');
+  trkCtx.clearRect(0,0,padTrk.clientWidth,padTrk.clientHeight);
+});
+
+/* 04 hover */
+const padH=$('#padH'),hRing=$('#hRing'),hRead=$('#hRead');
+padH.addEventListener('pointermove',e=>{
+  if(!isPen(e)){
+    if(isPalm(e))return;
+    hRing.style.opacity=0;
+    denyZone(padH,hRead,'ОТКЛОНЁН · НЕ ПЕРО',true);
+    return;
+  }
+  const p=posOn(e,padH);
+  padH.classList.add('used');
+  if(e.buttons===0){
+    hRing.style.opacity=1;hRing.style.left=p.x+'px';hRing.style.top=p.y+'px';
+    readOk(hRead,'HOVER: DETECTED ✦');
+  }else{hRing.style.opacity=0;readOk(hRead,'HOVER: PEN TOUCHING');}
+});
+padH.addEventListener('pointerleave',()=>{hRing.style.opacity=0;readOk(hRead,'HOVER: WAITING');});
+
+/* 05 identity — показывает всех, но принимает только перо */
+const padI=$('#padI'),idBadge=$('#idBadge'),iRead=$('#iRead'),idCount=$('#idCount');
+const idC={pen:0,touch:0,mouse:0};
+padI.addEventListener('pointerdown',e=>{
+  if(isPalm(e))return;
+  padI.classList.add('used');
+  const t=e.pointerType||'?';
+  idBadge.textContent=String(t).toUpperCase();
+  idBadge.className=isPen(e)?'ok':'warn';
+  if(isPen(e))readOk(iRead,'POINTER: PEN ✓ ПРИНЯТ');
+  else{iRead.textContent=`POINTER: ${String(t).toUpperCase()} · ОТКЛОНЁН`;iRead.classList.add('err');}
+  if(idC[t]!==undefined)idC[t]++;
+  idCount.textContent=`PEN ${idC.pen} · TOUCH ${idC.touch} · MOUSE ${idC.mouse}`;
+});
+padI.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* 06 accuracy */
+const padA=$('#padA'),accT=$('#accT'),aRead=$('#aRead');
+padA.addEventListener('pointerdown',e=>{
+  if(!isPen(e)){
+    if(isPalm(e))return;
+    const p=posOn(e,padA);
+    const m=document.createElement('span');m.className='denyX';m.textContent='✕';
+    m.style.left=p.x+'px';m.style.top=p.y+'px';
+    padA.appendChild(m);setTimeout(()=>m.remove(),650);
+    denyZone(padA,aRead,'ОТКЛОНЁН · ТОЛЬКО ПЕРО');
+    return;
+  }
+  padA.classList.add('used');
+  const tr=accT.getBoundingClientRect(),pr=padA.getBoundingClientRect();
+  const cx=tr.left+tr.width/2-pr.left,cy=tr.top+tr.height/2-pr.top;
+  const p=posOn(e,padA),d=Math.hypot(p.x-cx,p.y-cy);
+  const rating=d<=4?'PERFECT':d<=10?'GREAT':d<=22?'OK':'MISS';
+  const m=document.createElement('span');
+  m.className='hitmark'+(d<=10?' good':'');
+  m.style.left=p.x+'px';m.style.top=p.y+'px';
+  padA.appendChild(m);setTimeout(()=>m.remove(),1600);
+  accT.classList.add('hit');setTimeout(()=>accT.classList.remove('hit'),180);
+  readOk(aRead,`ACCURACY: ${d.toFixed(1)} PX · ${rating}`);
+});
+padA.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ---------- resize / главный цикл ---------- */
+function fitAll(){
+  sctx=fitCanvas($('#stageCv'));
+  trkCtx=fitCanvas(trkCv);
+  padCtx=fitCanvas(pad);
+  if(G.mode==='orbit'&&OG)orbitGeom();
+}
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(fitAll,150);});
+
+function tick(now){
+  const dt=Math.min(.05,(now-lastT)/1000);lastT=now;
+  if(!reduced){
+    tc.clearRect(0,0,innerWidth,innerHeight);
+    tp=tp.filter(p=>now-p.t<480);
+    for(let i=1;i<tp.length;i++){
+      const a=tp[i-1],b=tp[i];if(b.t-a.t>90)continue;
+      const k=1-(now-b.t)/480;
+      tc.strokeStyle=b.pen?`rgba(77,232,194,${(.4*k).toFixed(3)})`:`rgba(160,190,215,${(.16*k).toFixed(3)})`;
+      tc.lineWidth=b.pen?2.4:1.2;tc.lineCap='round';
+      tc.beginPath();tc.moveTo(a.x,a.y);tc.lineTo(b.x,b.y);tc.stroke();
+    }
+  }
+  if(padCtx&&now-padIdle>900){
+    padCtx.fillStyle='rgba(12,18,25,.06)';
+    padCtx.fillRect(0,0,pad.clientWidth,pad.clientHeight);
+  }
+  if(G.running&&!G.paused){
+    if(G.mode==='rush')rushUpdate(dt);
+    else if(G.mode==='orbit')orbitUpdate(dt);
+    else if(G.mode==='zen')zenUpdate(dt);
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(t=>{lastT=t;requestAnimationFrame(tick);});
+
+/* ---------- восстановление сессии ---------- */
+try{
+  const d=sessionStorage.getItem(DEVKEY);
+  if(d){S.device=d;$$('.dev-row').forEach(r=>r.classList.toggle('picked',r.dataset.label===d));showMain();}
+}catch(e){}
+fitAll();
+</script>
+</body>
+</html>
